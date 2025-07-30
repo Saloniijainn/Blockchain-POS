@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoS Blockchain Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--dark);
+            font-weight: 300;
+            font-size: 1.2rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .card h2 i {
+            margin-right: 0.5rem;
+        }
+
+        .card p {
+            color: #636e72;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: #5649d6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+        }
+
+        button i {
+            margin-right: 0.5rem;
+        }
+
+        #mine-btn {
+            background-color: var(--success);
+            width: 100%;
+        }
+
+        #mine-btn:hover {
+            background-color: #00a884;
+        }
+
+        #chain-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 1.5rem;
+        }
+
+        pre {
+            background: #2d3436;
+            color: #f5f6fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .status {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        
+        .status {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 5px;
+        color: white;
+        z-index: 1000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        animation: slideIn 0.3s ease-out;
+    }
+
+          .status.success {
+              background-color: #4CAF50; /* Green */
+          }
+
+          .status.error {
+              background-color: #F44336; /* Red */
+          }
+
+          @keyframes slideIn {
+              from { transform: translateX(100%); }
+              to { transform: translateX(0); }
+          }
+                  .success {
+                      background-color: rgba(0, 184, 148, 0.1);
+                      color: var(--success);
+                      border: 1px solid var(--success);
+                  }
+
+        .error {
+            background-color: rgba(214, 48, 49, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .validator-badge {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Proof of Stake Blockchain Simulator</h1>
+            <p class="subtitle">Visualize how Proof of Stake consensus works in blockchain systems</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="card">
+                <h2><i class="fas fa-coins"></i> Stake Tokens</h2>
+                <p>Register or increase stake for a node to participate in validation.</p>
+                <div class="form-group">
+                    <label for="node">Node ID</label>
+                    <input id="node" placeholder="e.g., Node1, ValidatorA">
+                </div>
+                <div class="form-group">
+                    <label for="amt">Amount to Stake</label>
+                    <input id="amt" type="number" placeholder="e.g., 100, 500" min="1">
+                </div>
+                <button onclick="stake()"><i class="fas fa-hand-holding-usd"></i> Stake Tokens</button>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-cube"></i> Mine (Propose Block)</h2>
+                <p>Propose a new block. The validator is chosen probabilistically based on stake.</p>
+                <button id="mine-btn" onclick="mine()"><i class="fas fa-hammer"></i> Propose Block</button>
+                <div id="mine-status" class="status"></div>
+            </div>
+        </div>
+
+        <div id="chain-container">
+          <h2><i class="fas fa-link"></i> Blockchain Explorer</h2>
+          <p>View the entire blockchain and verify its integrity.</p>
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+              <button onclick="getChain()"><i class="fas fa-sync-alt"></i> Refresh</button>
+              <button onclick="clearChain()" style="background-color: #d63031;">
+                  <i class="fas fa-trash-alt"></i> Clear Blockchain
+              </button>
+          </div>
+          <pre id="chain">Blockchain data will appear here...</pre>
+      </div>
+    </div>
+
+    <script>
+        function stake() {
+            const node = document.getElementById('node').value;
+            const amt = parseInt(document.getElementById('amt').value);
+            
+            if (!node || !amt) {
+                alert('Please enter both node ID and amount');
+                return;
+            }
+            
+            fetch('/stake', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({node_id: node, amount: amt})
+            })
+            .then(r => r.json())
+            .then(data => {
+                alert(`Success: ${data.message}`);
+                document.getElementById('node').value = '';
+                document.getElementById('amt').value = '';
+            })
+            .catch(err => alert(`Error: ${err}`));
+        }
+        
+        function mine() {
+            const status = document.getElementById('mine-status');
+            status.style.display = 'block';
+            status.textContent = 'Selecting validator and proposing block...';
+            status.className = 'status';
+            
+            fetch('/mine')
+                .then(r => r.json())
+                .then(data => {
+                    status.textContent = `Success: ${data.message}`;
+                    status.className = 'status success';
+                    getChain();
+                })
+                .catch(err => {
+                    status.textContent = `Error: ${err.message || err}`;
+                    status.className = 'status error';
+                });
+        }
+        
+        function getChain() {
+            fetch('/chain')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('chain').textContent =
+                        JSON.stringify(data.chain, null, 2);
+                })
+                .catch(err => {
+                    document.getElementById('chain').textContent =
+                        `Error fetching chain: ${err.message || err}`;
+                });
+        }
+    </script>
+</body>
+</html>
